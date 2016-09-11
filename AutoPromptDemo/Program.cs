@@ -10,6 +10,16 @@ namespace rohankapoor.AutoPrompt.Demo
     {
         public static void Main(string[] args)
         {
+            PromptForPath();
+        }
+
+        private static void PromptForPath()
+        {
+            var userInput = AutoPrompt.GetPath("Enter path: ");
+
+            Console.WriteLine("Path entered by user : " + userInput);
+
+            Console.ReadLine();
         }
     }
 }
