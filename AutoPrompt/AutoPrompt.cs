@@ -34,10 +34,9 @@ namespace rohankapoor.AutoPrompt
             ConsoleKeyInfo KeyInfo;
             Console.Write(message + options[0]);
 
-            do
+            KeyInfo = Console.ReadKey(true);
+            while (KeyInfo.Key != ConsoleKey.Enter)
             {
-                KeyInfo = Console.ReadKey(true);
-
                 if (Char.IsLetterOrDigit(KeyInfo.KeyChar) || Char.IsSymbol(KeyInfo.KeyChar)
                     || (Char.IsPunctuation(KeyInfo.KeyChar) && KeyInfo.KeyChar != '\\')
                     || (Char.IsPunctuation(KeyInfo.KeyChar) && KeyInfo.KeyChar != '\\')
@@ -85,14 +84,10 @@ namespace rohankapoor.AutoPrompt
                 }
                 else if (!userInput.Equals(String.Empty) && KeyInfo.KeyChar == '\\')
                 {
-                    userInput = userInput + @"\";
-
-                    options = GetFilesDirs(userInput).ToArray();
-
+                    options = GetFilesDirs(userInput + @"\").ToArray();
                     if (options.Length>0)
                     {
                         Erase(userInput);
-
                         Console.Write(options[0]);
 
                         userInput = options[0];
@@ -156,8 +151,11 @@ namespace rohankapoor.AutoPrompt
                     // Set new user input
                     userInput = options[currentOptionDisplayedIndex];
                 }
+
+                KeyInfo = Console.ReadKey(true);
             }
-            while (KeyInfo.Key != ConsoleKey.Enter);
+
+            Console.WriteLine();
 
             return userInput;
         }
@@ -177,11 +175,9 @@ namespace rohankapoor.AutoPrompt
             Console.Write(message);
             Console.Write(initialInput);
 
-            do
+            KeyInfo = Console.ReadKey(true);
+            while (KeyInfo.Key != ConsoleKey.Enter)
             {
-                // Getting a Key from console
-                KeyInfo = Console.ReadKey(true);
-
                 if (Char.IsLetterOrDigit(KeyInfo.KeyChar) || Char.IsSymbol(KeyInfo.KeyChar)
                     || Char.IsPunctuation(KeyInfo.KeyChar) || Char.IsPunctuation(KeyInfo.KeyChar)
                     || Char.IsWhiteSpace(KeyInfo.KeyChar))
@@ -204,8 +200,11 @@ namespace rohankapoor.AutoPrompt
                         userInput = userInput.Substring(0, userInput.Length - 1);
                     }
                 }
+
+                // Getting a next key from console
+                KeyInfo = Console.ReadKey(true);
             }
-            while (KeyInfo.Key != ConsoleKey.Enter);
+            Console.WriteLine();
 
             return userInput.Trim();
         }
@@ -229,10 +228,9 @@ namespace rohankapoor.AutoPrompt
 
             Console.Write(message + options[0]);
 
-            do
+            KeyInfo = Console.ReadKey(true);
+            while (KeyInfo.Key != ConsoleKey.Enter)
             {
-                KeyInfo = Console.ReadKey(true);
-
                 if (Char.IsLetterOrDigit(KeyInfo.KeyChar) || Char.IsSymbol(KeyInfo.KeyChar)
                     || Char.IsPunctuation(KeyInfo.KeyChar) || Char.IsPunctuation(KeyInfo.KeyChar)
                     || Char.IsWhiteSpace(KeyInfo.KeyChar))
@@ -289,11 +287,13 @@ namespace rohankapoor.AutoPrompt
 
                     // Set new user input
                     UserInput = options[CurrentOptionDisplayedIndex];
-                }
-            }
-            while (KeyInfo.Key != ConsoleKey.Enter);
 
-            return UserInput.Substring(0, UserInput.Length - 1);
+                }
+                KeyInfo = Console.ReadKey(true);
+            }
+            Console.WriteLine();
+
+            return UserInput.Trim();
         }
 
         /// <summary>
@@ -316,9 +316,9 @@ namespace rohankapoor.AutoPrompt
 
             Console.Write(message + options[0]);
 
-            do
+            KeyInfo = Console.ReadKey(true);
+            while (KeyInfo.Key != ConsoleKey.Enter)
             {
-                KeyInfo = Console.ReadKey(true);
 
                 if (Char.IsLetterOrDigit(KeyInfo.KeyChar) || Char.IsSymbol(KeyInfo.KeyChar)
                     || Char.IsPunctuation(KeyInfo.KeyChar) || Char.IsPunctuation(KeyInfo.KeyChar)
@@ -410,8 +410,10 @@ namespace rohankapoor.AutoPrompt
                     // Set new user input
                     UserInput = options[CurrentOptionDisplayedIndex];
                 }
+
+                KeyInfo = Console.ReadKey(true);
             }
-            while (KeyInfo.Key != ConsoleKey.Enter);
+            Console.WriteLine();
 
             return UserInput;
         }
@@ -428,11 +430,9 @@ namespace rohankapoor.AutoPrompt
             string PasswordString = "";
             ConsoleKeyInfo KeyInfo;
 
-            do
+            KeyInfo = Console.ReadKey(true);
+            while (KeyInfo.Key != ConsoleKey.Enter)
             {
-                // Getting a Key from console
-                KeyInfo = Console.ReadKey(true);
-
                 if (Char.IsLetterOrDigit(KeyInfo.KeyChar))
                 {
                     // If its a Letter or Digit, echo * to screen, add to Input String
@@ -452,8 +452,10 @@ namespace rohankapoor.AutoPrompt
                         PasswordString = PasswordString.Substring(0, PasswordString.Length - 1);
                     }
                 }
+
+                KeyInfo = Console.ReadKey(true);
             }
-            while (KeyInfo.Key != ConsoleKey.Enter);
+            Console.WriteLine();
 
             return PasswordString;
         }
