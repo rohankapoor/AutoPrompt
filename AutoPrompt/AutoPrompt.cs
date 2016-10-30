@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 namespace rohankapoor.AutoPrompt
 {
@@ -27,9 +28,8 @@ namespace rohankapoor.AutoPrompt
                 options[optionsIndex] = options[optionsIndex].Remove(options[optionsIndex].Length - 1);
             }
 
-            string userInput = options[0];
+            StringBuilder result = new StringBuilder(options[0]);
             int currentOptionDisplayedIndex = 0;
-            int optionCount = options.Length;
 
             ConsoleKeyInfo KeyInfo;
             Console.Write(message + options[0]);
@@ -40,86 +40,72 @@ namespace rohankapoor.AutoPrompt
                 if (Char.IsLetterOrDigit(KeyInfo.KeyChar) || Char.IsSymbol(KeyInfo.KeyChar)
                     || (Char.IsPunctuation(KeyInfo.KeyChar) && KeyInfo.KeyChar != '\\')
                     || (Char.IsPunctuation(KeyInfo.KeyChar) && KeyInfo.KeyChar != '\\')
-                    || Char.IsWhiteSpace(KeyInfo.KeyChar)
-                    )
+                    || Char.IsWhiteSpace(KeyInfo.KeyChar))
                 {
                     Console.Write(KeyInfo.KeyChar);
 
-                    userInput += KeyInfo.KeyChar;
+                    result.Append(KeyInfo.KeyChar);
 
                     // Performing Closest Search
-                    int FoundIndex = -1;
-                    int OptionIndex = 0;
+                    int foundIndex = -1;
+                    int optionIndex = 0;
                     foreach (string Option in options)
                     {
-                        if (Option.ToLower().StartsWith(userInput.ToLower()))
+                        if (Option.ToLower().StartsWith(result.ToString().ToLower()))
                         {
-                            FoundIndex = OptionIndex;
+                            foundIndex = optionIndex;
 
-                            // Display that Option Erasing Old
-                            for (int UserInputIndex = 0; UserInputIndex < userInput.Length; UserInputIndex++)
-                            {
-                                Console.Write("\b" + " " + "\b");
-                            }
+                            // Erase old option and display new
+                            EraseInput(result.Length);
 
                             // Display new
-                            userInput = options[FoundIndex];
-                            currentOptionDisplayedIndex = FoundIndex;
-
+                            result.Clear();
+                            result.Append(options[foundIndex]);
+                            
+                            currentOptionDisplayedIndex = foundIndex;
                             Console.Write(options[currentOptionDisplayedIndex]);
 
                             break;
                         }
-                        OptionIndex++;
+                        optionIndex++;
                     }
                 }
-                else if (!userInput.Equals(String.Empty) && KeyInfo.Key == ConsoleKey.Backspace)
+                else if (result.Length>0 && KeyInfo.Key == ConsoleKey.Backspace)
                 {
-                    Console.Write("\b" + " " + "\b");
-
-                    if (!string.IsNullOrEmpty(userInput))
-                    {
-                        userInput = userInput.Substring(0, userInput.Length - 1);
-                    }
+                    // User hit back space. Erase console and input string by 1 char
+                    EraseInput(1);
+                    result.Remove(result.Length - 1, 1);
                 }
-                else if (!userInput.Equals(String.Empty) && KeyInfo.KeyChar == '\\')
+                else if (result.Length>0 && KeyInfo.KeyChar == '\\')
                 {
-                    options = GetFilesDirs(userInput + @"\").ToArray();
+                    options = GetFilesDirs(result + @"\").ToArray();
                     if (options.Length>0)
                     {
-                        Erase(userInput);
+                        EraseInput(result.Length);
                         Console.Write(options[0]);
 
-                        userInput = options[0];
-                        optionCount = options.Length;
+                        result.Clear();
+                        result.Append(options[0]);
                         currentOptionDisplayedIndex = 0;
                     }
                     else
                     {
-                        // Not a directory. No action required.
+                        // Not a directory or no files in directory. No action required
                     }
                 }
-                else if (!userInput.Equals(String.Empty) && KeyInfo.Key == ConsoleKey.Delete)
+                else if (result.Length>0 && KeyInfo.Key == ConsoleKey.Delete)
                 {
-                    // Erase everything
-                    for (int UserInputIndex = 0; UserInputIndex < userInput.Length; UserInputIndex++)
-                    {
-                        Console.Write("\b" + " " + "\b");
-                    }
+                    // Erase everything on console and clear user input
+                    EraseInput(result.Length);
 
-                    // Set UserInput to Empty
-                    userInput = "";
-
+                    // Clear user input
+                    result.Clear();
                 }
                 else if (KeyInfo.Key == ConsoleKey.UpArrow || KeyInfo.Key == ConsoleKey.DownArrow)
                 {
-                    // Need to display another option
+                    // Need to display next option
 
-                    // Erase on screen and in UserInput string
-                    for (int UserInputIndex = 0; UserInputIndex < userInput.Length; UserInputIndex++)
-                    {
-                        Console.Write("\b" + " " + "\b");
-                    }
+                    EraseInput(result.Length);
 
                     // Display new option
                     if (KeyInfo.Key == ConsoleKey.UpArrow)
@@ -130,12 +116,12 @@ namespace rohankapoor.AutoPrompt
                         }
                         else
                         {
-                            currentOptionDisplayedIndex = optionCount - 1;
+                            currentOptionDisplayedIndex = options.Length - 1;
                         }
                     }
                     else if (KeyInfo.Key == ConsoleKey.DownArrow)
                     {
-                        if (currentOptionDisplayedIndex < optionCount - 1)
+                        if (currentOptionDisplayedIndex < options.Length - 1)
                         {
                             currentOptionDisplayedIndex++;
                         }
@@ -145,11 +131,18 @@ namespace rohankapoor.AutoPrompt
                         }
                     }
 
-                    // Show it
-                    Console.Write(options[currentOptionDisplayedIndex]);
-
-                    // Set new user input
-                    userInput = options[currentOptionDisplayedIndex];
+                    // Show new option
+                    result.Clear();
+                    if (options.Length > 0)
+                    {
+                        Console.Write(options[currentOptionDisplayedIndex]);
+                        // Set new user input
+                        result.Append(options[currentOptionDisplayedIndex]);
+                    }
+                    else
+                    {
+                        result.Clear();
+                    }
                 }
 
                 KeyInfo = Console.ReadKey(true);
@@ -157,7 +150,7 @@ namespace rohankapoor.AutoPrompt
 
             Console.WriteLine();
 
-            return userInput;
+            return result.ToString();
         }
 
         /// <summary>
@@ -168,7 +161,7 @@ namespace rohankapoor.AutoPrompt
         /// <returns>User entered string or 'initialInput' if no edits were made</returns>
         public static string PromptForInput(string message, string initialInput)
         {
-            string userInput = initialInput;
+            StringBuilder result = new StringBuilder(initialInput);
 
             ConsoleKeyInfo KeyInfo;
 
@@ -185,20 +178,13 @@ namespace rohankapoor.AutoPrompt
                     // If its a Letter or Digit, echo to screen, add to Input String
                     Console.Write(KeyInfo.KeyChar);
 
-                    userInput += KeyInfo.KeyChar;
+                    result.Append(KeyInfo.KeyChar);
                 }
-                else if (!userInput.Equals(String.Empty) && KeyInfo.Key == ConsoleKey.Backspace)
+                else if (result.Length>0 && KeyInfo.Key == ConsoleKey.Backspace)
                 {
-                    //User hit back space
-
-                    // Erasing on Console
-                    Console.Write("\b" + " " + "\b");
-
-                    // Erasing in Input String
-                    if (!String.IsNullOrEmpty(userInput))
-                    {
-                        userInput = userInput.Substring(0, userInput.Length - 1);
-                    }
+                    // User hit back space. Erase console and input string by 1 char
+                    EraseInput(1);
+                    result.Remove(result.Length - 1, 1);
                 }
 
                 // Getting a next key from console
@@ -206,7 +192,7 @@ namespace rohankapoor.AutoPrompt
             }
             Console.WriteLine();
 
-            return userInput.Trim();
+            return result.ToString().Trim();
         }
 
         /// <summary>
@@ -220,9 +206,8 @@ namespace rohankapoor.AutoPrompt
         /// <returns>User entered string or one of the string in 'options' choosen by the user</returns>
         public static string PromptForInput(string message, string[] options)
         {
-            int OptionCount = options.Length;
             int CurrentOptionDisplayedIndex = 0;
-            string UserInput = options[0];
+            StringBuilder result = new StringBuilder(options[0]);
 
             ConsoleKeyInfo KeyInfo;
 
@@ -237,26 +222,20 @@ namespace rohankapoor.AutoPrompt
                 {
                     Console.Write(KeyInfo.KeyChar);
 
-                    UserInput += KeyInfo.KeyChar;
+                    result.Append(KeyInfo.KeyChar);
                 }
-                else if (!UserInput.Equals(String.Empty) && KeyInfo.Key == ConsoleKey.Backspace)
+                else if (result.Length > 0 && KeyInfo.Key == ConsoleKey.Backspace)
                 {
-                    Console.Write("\b" + " " + "\b");
-
-                    if (!String.IsNullOrEmpty(UserInput))
-                    {
-                        UserInput = UserInput.Substring(0, UserInput.Length - 1);
-                    }
+                    // User hit back space. Erase console and input string by 1 char
+                    EraseInput(1);
+                    result.Remove(result.Length - 1, 1);
                 }
                 else if (KeyInfo.Key == ConsoleKey.UpArrow || KeyInfo.Key == ConsoleKey.DownArrow)
                 {
                     // We have to display another option
 
                     // Erase on screen and in UserInput string
-                    for (int UserInputIndex = 0; UserInputIndex < UserInput.Length; UserInputIndex++)
-                    {
-                        Console.Write("\b" + " " + "\b");
-                    }
+                    EraseInput(result.Length);
 
                     // Display new option
                     if (KeyInfo.Key == ConsoleKey.UpArrow)
@@ -267,12 +246,12 @@ namespace rohankapoor.AutoPrompt
                         }
                         else
                         {
-                            CurrentOptionDisplayedIndex = OptionCount - 1;
+                            CurrentOptionDisplayedIndex = options.Length - 1;
                         }
                     }
                     else if (KeyInfo.Key == ConsoleKey.DownArrow)
                     {
-                        if (CurrentOptionDisplayedIndex < OptionCount - 1)
+                        if (CurrentOptionDisplayedIndex < options.Length - 1)
                         {
                             CurrentOptionDisplayedIndex++;
                         }
@@ -286,14 +265,14 @@ namespace rohankapoor.AutoPrompt
                     Console.Write(options[CurrentOptionDisplayedIndex]);
 
                     // Set new user input
-                    UserInput = options[CurrentOptionDisplayedIndex];
-
+                    result.Clear();
+                    result.Append(options[CurrentOptionDisplayedIndex]);
                 }
                 KeyInfo = Console.ReadKey(true);
             }
             Console.WriteLine();
 
-            return UserInput.Trim();
+            return result.ToString().Trim();
         }
 
         /// <summary>
@@ -308,9 +287,8 @@ namespace rohankapoor.AutoPrompt
         /// <returns>User entered string or one of the string in 'options' choosen by the user</returns>
         public static string PromptForInput_Searchable(string message, string[] options)
         {
-            int OptionCount = options.Length;
+            StringBuilder result = new StringBuilder(options[0]);
             int CurrentOptionDisplayedIndex = 0;
-            string UserInput = options[0];
 
             ConsoleKeyInfo KeyInfo;
 
@@ -326,27 +304,23 @@ namespace rohankapoor.AutoPrompt
                 {
                     Console.Write(KeyInfo.KeyChar);
 
-                    UserInput += KeyInfo.KeyChar;
+                    result.Append(KeyInfo.KeyChar);
 
                     // Performing Closest Search
-                    int FoundIndex = -1;
+                    int foundIndex = -1;
                     int OptionIndex = 0;
                     foreach (string Option in options)
                     {
-                        if (Option.ToLower().StartsWith(UserInput.ToLower()))
+                        if (Option.ToLower().StartsWith(result.ToString().ToLower()))
                         {
-                            FoundIndex = OptionIndex;
+                            foundIndex = OptionIndex;
 
-                            /* Display that Option */
-                            /* Erasing Old */
-                            for (int UserInputIndex = 0; UserInputIndex < UserInput.Length; UserInputIndex++)
-                            {
-                                Console.Write("\b" + " " + "\b");
-                            }
+                            // Erase displayed option and show new option
+                            EraseInput(result.Length);
 
-                            /* display new */
-                            UserInput = options[FoundIndex];
-                            CurrentOptionDisplayedIndex = FoundIndex;
+                            result.Clear();
+                            result.Append(options[foundIndex]);
+                            CurrentOptionDisplayedIndex = foundIndex;
 
                             Console.Write(options[CurrentOptionDisplayedIndex]);
 
@@ -356,36 +330,23 @@ namespace rohankapoor.AutoPrompt
                     }
                     // Closest search ends
                 }
-                else if (!UserInput.Equals(String.Empty) && KeyInfo.Key == ConsoleKey.Backspace)
+                else if (result.Length>0 && KeyInfo.Key == ConsoleKey.Backspace)
                 {
-                    Console.Write("\b" + " " + "\b");
-
-                    if (!string.IsNullOrEmpty(UserInput))
-                    {
-                        UserInput = UserInput.Substring(0, UserInput.Length - 1);
-                    }
+                    // User hit back space. Erase console and input string by 1 char
+                    EraseInput(1);
+                    result.Remove(result.Length - 1, 1);
                 }
-                else if (!UserInput.Equals(String.Empty) && KeyInfo.Key == ConsoleKey.Delete)
+                else if (result.Length > 0 && KeyInfo.Key == ConsoleKey.Delete)
                 {
-                    // Erase it all
-                    for (int UserInputIndex = 0; UserInputIndex < UserInput.Length; UserInputIndex++)
-                    {
-                        Console.Write("\b" + " " + "\b");
-                    }
-
-                    // Set UserInput to Empty
-                    UserInput = "";
-
+                    // Erase everything and set user input to empty
+                    EraseInput(result.Length);
+                    result.Clear();
                 }
                 else if (KeyInfo.Key == ConsoleKey.UpArrow || KeyInfo.Key == ConsoleKey.DownArrow)
                 {
-                    // Display another option
+                    // Remove current option and Display another option
 
-                    // Erase on screen and in UserInput string
-                    for (int UserInputIndex = 0; UserInputIndex < UserInput.Length; UserInputIndex++)
-                    {
-                        Console.Write("\b" + " " + "\b");
-                    }
+                    EraseInput(result.Length);
 
                     // Display new option
                     if (KeyInfo.Key == ConsoleKey.UpArrow)
@@ -393,12 +354,12 @@ namespace rohankapoor.AutoPrompt
                         if (CurrentOptionDisplayedIndex > 0)
                             CurrentOptionDisplayedIndex--;
                         else
-                            CurrentOptionDisplayedIndex = OptionCount - 1;
+                            CurrentOptionDisplayedIndex = options.Length - 1;
 
                     }
                     else if (KeyInfo.Key == ConsoleKey.DownArrow)
                     {
-                        if (CurrentOptionDisplayedIndex < OptionCount - 1)
+                        if (CurrentOptionDisplayedIndex < options.Length - 1)
                             CurrentOptionDisplayedIndex++;
                         else
                             CurrentOptionDisplayedIndex = 0;
@@ -408,14 +369,15 @@ namespace rohankapoor.AutoPrompt
                     Console.Write(options[CurrentOptionDisplayedIndex]);
 
                     // Set new user input
-                    UserInput = options[CurrentOptionDisplayedIndex];
+                    result.Clear();
+                    result.Append(options[CurrentOptionDisplayedIndex]);
                 }
 
                 KeyInfo = Console.ReadKey(true);
             }
             Console.WriteLine();
 
-            return UserInput;
+            return result.ToString();
         }
 
         /// <summary>
@@ -425,9 +387,10 @@ namespace rohankapoor.AutoPrompt
         /// <returns>The password entered by the user</returns>
         public static string GetPassword(string message)
         {
+            StringBuilder result = new StringBuilder();
+
             Console.Write(message);
 
-            string PasswordString = "";
             ConsoleKeyInfo KeyInfo;
 
             KeyInfo = Console.ReadKey(true);
@@ -437,36 +400,29 @@ namespace rohankapoor.AutoPrompt
                 {
                     // If its a Letter or Digit, echo * to screen, add to Input String
                     Console.Write("*");
-                    PasswordString += KeyInfo.KeyChar;
+                    result.Append(KeyInfo.KeyChar);
                 }
-                else if (PasswordString != String.Empty && KeyInfo.Key == ConsoleKey.Backspace)
+                else if (result.Length>0 && KeyInfo.Key == ConsoleKey.Backspace)
                 {
-                    // User hit back space
-
-                    // Erasing on Console
-                    Console.Write("\b" + " " + "\b");
-
-                    // Erasing in Input String
-                    if (!string.IsNullOrEmpty(PasswordString))
-                    {
-                        PasswordString = PasswordString.Substring(0, PasswordString.Length - 1);
-                    }
+                    // User hit back space. Erase console and input string by 1 char
+                    EraseInput(1);
+                    result.Remove(result.Length - 1, 1);
                 }
 
                 KeyInfo = Console.ReadKey(true);
             }
             Console.WriteLine();
 
-            return PasswordString;
+            return result.ToString();
         }
 
         #endregion
 
         #region Utils
 
-        private static void Erase(string userInput)
+        private static void EraseInput(int lengthToErase)
         {
-            for (int i = 0; i < userInput.Length; i++)
+            for (int i = 0; i<lengthToErase; i++)
             {
                 Console.Write("\b" + " " + "\b");
             }
