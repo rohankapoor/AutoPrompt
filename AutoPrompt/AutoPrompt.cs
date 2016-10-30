@@ -139,10 +139,6 @@ namespace rohankapoor.AutoPrompt
                         // Set new user input
                         result.Append(options[currentOptionDisplayedIndex]);
                     }
-                    else
-                    {
-                        result.Clear();
-                    }
                 }
 
                 KeyInfo = Console.ReadKey(true);
