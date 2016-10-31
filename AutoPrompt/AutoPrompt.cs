@@ -16,6 +16,7 @@ namespace rohankapoor.AutoPrompt
         ///      Down Arrow to go to previous file or directory
         ///      '\' to navigate into current directory
         ///      Any key to list matching files and directory. The search criteria is 'begins with'. Eg, When 'W' is pressed in C:\, the prompt will auto fill with 'Windows' as the closest match. The search is case sensitive
+        ///     Enter to return with the current value
         /// </summary>
         /// <param name="message">Message that appears on the prompt. For eg, Enter Value:</param>
         /// <returns>Full path of the file or directory selected</returns>
@@ -197,6 +198,7 @@ namespace rohankapoor.AutoPrompt
         ///     Up Arrow to go to next option
         ///     Down Arrow to go to previous option
         ///     Any character to edit the current option
+        ///     Enter to return with the current value
         /// </summary>
         /// <param name="message">Message that appears on the prompt. For eg, Enter Value:</param>
         /// <param name="options">List of values. Eg {Mr, Mrs, Ms} can be passed if prompt if for salutation. User can switch between these values by pressing up/down arrow OR enter something like Dr or Er and hit enter</param>
@@ -211,9 +213,11 @@ namespace rohankapoor.AutoPrompt
         /// Press:
         ///     Up Arrow to go to next option
         ///     Down Arrow to go to previous option
+        ///     Enter to return with the current value
         /// </summary>
         /// <param name="message">Message that appears on the prompt. For eg, Enter Value:</param>
-        /// <param name="options">List of values. Eg {Mr, Mrs, Ms} can be passed if prompt if for salutation. User can switch between these values by pressing up/down arrow OR enter something like Dr or Er and hit enter</param>
+        /// <param name="options">List of values. Eg {Mr, Mrs, Ms} can be passed if prompt is for salutation. User can switch between these values by pressing up/down arrow or type another value if edits are allowed</param>
+        /// <param name="allowEdits">If set to false, keys for characters, backspace, delete will not work. Only Up down can be used to select the options</param>
         /// <returns>User entered string or one of the string in 'options' choosen by the user</returns>
         public static string PromptForInput(string message, string[] options, bool allowEdits)
         {
@@ -293,6 +297,7 @@ namespace rohankapoor.AutoPrompt
         ///     Up Arrow to go to next option
         ///     Down Arrow to go to previous option
         ///     Any key to list closest matching option. The search criteria is 'begins with'. Eg, When 'C' is pressed and options is a list of US states, then 'California' is set to as choosen option. The search is case sensitive
+        ///     Enter to return with the current value
         /// </summary>
         /// <param name="message">Message that appears on the prompt. For eg, Enter Value:</param>
         /// <param name="options">Input options that the user can choose from using up-down arrow or type to get to</param>
