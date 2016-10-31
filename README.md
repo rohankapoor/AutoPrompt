@@ -1,4 +1,4 @@
-# AutoPrompt [![Travis](https://img.shields.io/travis/rohankapoor/AutoPrompt.svg)]() [![NuGet](https://img.shields.io/nuget/v/rohankapoor.AutoPrompt.svg)]()
+# AutoPrompt [![Travis](https://img.shields.io/travis/rohankapoor/AutoPrompt.svg)](https://travis-ci.org/rohankapoor/AutoPrompt) [![NuGet](https://img.shields.io/nuget/v/rohankapoor.AutoPrompt.svg)](https://www.nuget.org/packages/rohankapoor.AutoPrompt)
 
 Auto complete command prompts for C# .Net console apps. This library provides APIs that can be used to accept input from command line with the added functionality.
 
