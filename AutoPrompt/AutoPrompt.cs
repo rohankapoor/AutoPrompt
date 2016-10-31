@@ -196,11 +196,26 @@ namespace rohankapoor.AutoPrompt
         /// Press:
         ///     Up Arrow to go to next option
         ///     Down Arrow to go to previous option
+        ///     Any character to edit the current option
         /// </summary>
         /// <param name="message">Message that appears on the prompt. For eg, Enter Value:</param>
         /// <param name="options">List of values. Eg {Mr, Mrs, Ms} can be passed if prompt if for salutation. User can switch between these values by pressing up/down arrow OR enter something like Dr or Er and hit enter</param>
         /// <returns>User entered string or one of the string in 'options' choosen by the user</returns>
         public static string PromptForInput(string message, string[] options)
+        {
+            return PromptForInput(message, options, true);
+        }
+
+        /// <summary>
+        /// Accepts user input by displaying options. The input is not editable and the user must choose among the options available
+        /// Press:
+        ///     Up Arrow to go to next option
+        ///     Down Arrow to go to previous option
+        /// </summary>
+        /// <param name="message">Message that appears on the prompt. For eg, Enter Value:</param>
+        /// <param name="options">List of values. Eg {Mr, Mrs, Ms} can be passed if prompt if for salutation. User can switch between these values by pressing up/down arrow OR enter something like Dr or Er and hit enter</param>
+        /// <returns>User entered string or one of the string in 'options' choosen by the user</returns>
+        public static string PromptForInput(string message, string[] options, bool allowEdits)
         {
             int CurrentOptionDisplayedIndex = 0;
             StringBuilder result = new StringBuilder(options[0]);
@@ -212,15 +227,16 @@ namespace rohankapoor.AutoPrompt
             KeyInfo = Console.ReadKey(true);
             while (KeyInfo.Key != ConsoleKey.Enter)
             {
-                if (Char.IsLetterOrDigit(KeyInfo.KeyChar) || Char.IsSymbol(KeyInfo.KeyChar)
+                if ((Char.IsLetterOrDigit(KeyInfo.KeyChar) || Char.IsSymbol(KeyInfo.KeyChar)
                     || Char.IsPunctuation(KeyInfo.KeyChar) || Char.IsPunctuation(KeyInfo.KeyChar)
                     || Char.IsWhiteSpace(KeyInfo.KeyChar))
+                    && allowEdits)
                 {
                     Console.Write(KeyInfo.KeyChar);
 
                     result.Append(KeyInfo.KeyChar);
                 }
-                else if (result.Length > 0 && KeyInfo.Key == ConsoleKey.Backspace)
+                else if (result.Length > 0 && KeyInfo.Key == ConsoleKey.Backspace && allowEdits)
                 {
                     // User hit back space. Erase console and input string by 1 char
                     EraseInput(1);
