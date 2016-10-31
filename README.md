@@ -21,6 +21,7 @@ In Visual Studio solution, right click and Manage Nuget Packages. Search online 
   * [Prompt for path of directory or file](#prompt-for-path-of-directory-or-file)
   * [Prompt with initial input](#prompt-with-initial-input)
   * [Prompt with a set of options](#prompt-with-a-set-of-options)
+  * [Prompt with a set of non-editable options](#prompt-with-a-set-of-non-editable-options)
   * [Prompt with a set of searchable options](#prompt-with-a-set-of-searchable-options)
   * [Prompt for password](#prompt-for-password)
   
@@ -59,6 +60,14 @@ Prompts the user for input on command line with a prompt string as well as a set
 string userInput = AutoPrompt.PromptForInput("Choose occupation (Press up/down arrow to choose) :", new string[] { "Engineer", "Scientist", "Salesman", "Manager", "TopManagement" });
 ```
 
+### Prompt with a set of non-editable options
+
+Prompts the user for input on command line with a prompt string as well as a set of option. User can only choose among various options using Up and Down arrow. 
+
+#####Usage:
+```
+string userInput = AutoPrompt.PromptForInput("Choose occupation (Press up/down arrow to choose) :", new string[] { "Engineer", "Scientist", "Salesman", "Manager", "TopManagement" }, false);
+```
 
 
 ### Prompt with a set of searchable options
