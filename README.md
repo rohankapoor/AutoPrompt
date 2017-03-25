@@ -2,8 +2,9 @@
 
 Auto complete command prompts for C# .Net console apps. This library provides APIs that can be used to accept input from the command line with added functionality.
 
-The user can supply prefilled input, edit it, use Up or Down arrow to go throught the input options supplied or even press a key to go to the closest maching option
-Directory or file path is also autofilled based on the contents of directory or drive choosen:
+The user can supply prefilled input, edit it, use Up or Down arrow to go throught the input options supplied or even press a key to go to the closest maching option.
+
+For example, When the prompt is for a path, the user can navigate down a directory structure with choosing prefilled options with Up/Down arrow keys, typing \ to drill down into the directory and repeat the same process. This allows the user to key in a path with a fraction of keystores as opposed to typing the full path or switching context and pasting the path from another app.
 
 ## Installation
 
