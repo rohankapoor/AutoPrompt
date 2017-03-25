@@ -1,6 +1,6 @@
 # AutoPrompt [![Travis](https://img.shields.io/travis/rohankapoor/AutoPrompt.svg)](https://travis-ci.org/rohankapoor/AutoPrompt) [![NuGet](https://img.shields.io/nuget/v/rohankapoor.AutoPrompt.svg)](https://www.nuget.org/packages/rohankapoor.AutoPrompt)
 
-Auto complete command prompts for C# .Net console apps. This library provides APIs that can be used to accept input from command line with the added functionality.
+Auto complete command prompts for C# .Net console apps. This library provides APIs that can be used to accept input from the command line with added functionality.
 
 The user can supply prefilled input, edit it, use Up or Down arrow to go throught the input options supplied or even press a key to go to the closest maching option
 Directory or file path is also autofilled based on the contents of directory or drive choosen:
