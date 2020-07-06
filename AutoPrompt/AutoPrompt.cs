@@ -1,6 +1,7 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace rohankapoor.AutoPrompt
@@ -445,27 +446,23 @@ namespace rohankapoor.AutoPrompt
             }
         }
 
-        private static List<string> GetFilesDirs(string userInput)
+        private static HashSet<string> GetFilesDirs(string userInput)
         {
-            List<string> result = new List<string>();
+            var result = new HashSet<string>();
             if (Directory.Exists(userInput))
             {
                 try
                 {
-                    var directories = Directory.GetDirectories(userInput);
-                    result.AddRange(directories);
-                    var files = Directory.GetFiles(userInput);
-                    result.AddRange(files);
+                    var filesAndDirs = Directory.EnumerateFileSystemEntries(userInput);
+                    result.UnionWith(filesAndDirs);
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
-
                 }
             }
-
             return result;
         }
-
+        
         #endregion
     }
 }
